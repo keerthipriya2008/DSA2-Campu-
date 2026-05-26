@@ -1,0 +1,212 @@
+import java.util.*;
+
+// CampusFlow – University Campus Resource Management System using BST
+
+// BST Node Class
+class Node {
+    int key;
+    String roomId;
+    String facilityName;
+    String bookingDetails;
+
+    Node left, right;
+
+    // Constructor
+    public Node(int key, String roomId, String facilityName, String bookingDetails) {
+        this.key = key;
+        this.roomId = roomId;
+        this.facilityName = facilityName;
+        this.bookingDetails = bookingDetails;
+
+        left = right = null;
+    }
+}
+
+// BST Class
+class CampusBST {
+
+    Node root;
+
+    // Insert Method
+    Node insert(Node root, int key, String roomId,
+                String facilityName, String bookingDetails) {
+
+        if (root == null) {
+            root = new Node(key, roomId, facilityName, bookingDetails);
+            return root;
+        }
+
+        if (key < root.key) {
+            root.left = insert(root.left, key, roomId,
+                    facilityName, bookingDetails);
+        }
+
+        else if (key > root.key) {
+            root.right = insert(root.right, key, roomId,
+                    facilityName, bookingDetails);
+        }
+
+        return root;
+    }
+
+    // Search Method
+    Node search(Node root, int key) {
+
+        if (root == null || root.key == key) {
+            return root;
+        }
+
+        if (key < root.key) {
+            return search(root.left, key);
+        }
+
+        return search(root.right, key);
+    }
+
+    // Find Minimum Node
+    Node minValue(Node root) {
+
+        Node current = root;
+
+        while (current.left != null) {
+            current = current.left;
+        }
+
+        return current;
+    }
+
+    // Delete Method
+    Node delete(Node root, int key) {
+
+        if (root == null) {
+            return root;
+        }
+
+        if (key < root.key) {
+            root.left = delete(root.left, key);
+        }
+
+        else if (key > root.key) {
+            root.right = delete(root.right, key);
+        }
+
+        else {
+
+            // One child or no child
+            if (root.left == null)
+                return root.right;
+
+            else if (root.right == null)
+                return root.left;
+
+            // Two children
+            Node temp = minValue(root.right);
+
+            root.key = temp.key;
+            root.roomId = temp.roomId;
+            root.facilityName = temp.facilityName;
+            root.bookingDetails = temp.bookingDetails;
+
+            root.right = delete(root.right, temp.key);
+        }
+
+        return root;
+    }
+
+    // Inorder Traversal
+    void inorder(Node root) {
+
+        if (root != null) {
+
+            inorder(root.left);
+
+            System.out.println("Booking ID      : " + root.key);
+            System.out.println("Room ID         : " + root.roomId);
+            System.out.println("Facility Name   : " + root.facilityName);
+            System.out.println("Booking Details : " + root.bookingDetails);
+            System.out.println("--------------------------------");
+
+            inorder(root.right);
+        }
+    }
+
+    // Count Resources
+    int countResources(Node root) {
+
+        if (root == null) {
+            return 0;
+        }
+
+        return 1 + countResources(root.left)
+                 + countResources(root.right);
+    }
+}
+
+// Main Class
+public class Main {
+
+    public static void main(String[] args) {
+
+        CampusBST bst = new CampusBST();
+
+        // Insert Records
+        bst.root = bst.insert(bst.root, 101,
+                "CR-201",
+                "Classroom",
+                "Data Structures Class");
+
+        bst.root = bst.insert(bst.root, 205,
+                "LAB-1",
+                "Computer Lab",
+                "Java Programming Lab");
+
+        bst.root = bst.insert(bst.root, 150,
+                "AUD-3",
+                "Auditorium",
+                "Technical Seminar");
+
+        bst.root = bst.insert(bst.root, 250,
+                "LIB-2",
+                "Library Hall",
+                "Workshop Event");
+
+        bst.root = bst.insert(bst.root, 175,
+                "CR-105",
+                "Classroom",
+                "Faculty Meeting");
+
+        // Display Records
+        System.out.println("===== CAMPUS RESOURCE RECORDS =====");
+        bst.inorder(bst.root);
+
+        // Search Operation
+        int searchKey = 205;
+
+        Node result = bst.search(bst.root, searchKey);
+
+        if (result != null) {
+
+            System.out.println("\nRESOURCE FOUND");
+            System.out.println("Room ID       : " + result.roomId);
+            System.out.println("Facility Name : " + result.facilityName);
+            System.out.println("Details       : " + result.bookingDetails);
+
+        } else {
+
+            System.out.println("\nRESOURCE NOT FOUND");
+        }
+
+        // Delete Operation
+        System.out.println("\nDeleting Booking ID 150...");
+        bst.root = bst.delete(bst.root, 150);
+
+        // Display Updated Records
+        System.out.println("\n===== UPDATED RECORDS =====");
+        bst.inorder(bst.root);
+
+        // Analytics
+        int total = bst.countResources(bst.root);
+
+        System.out.println("\nTotal Active Resources : " + total);
+    }
+}
